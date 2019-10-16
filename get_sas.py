@@ -5,7 +5,7 @@ from api import decksofkeyforge
 import json
 import os
 from reportlab.pdfgen import canvas
-from reportlab.lib.colors import white
+from reportlab.lib.colors import white, black
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.pagesizes import landscape
 from reportlab.lib.units import inch, mm
@@ -33,6 +33,8 @@ if os.path.isdir(deck_dir):
     print('deck already saved')
     with open(filename + '_dok', 'r') as f:
         data = f.read()
+    with open(filename + '_kc', 'r') as f:
+        data_kc = f.read()
 else:
     url = 'https://decksofkeyforge.com/public-api/v3/decks/' + deck_id
     r = requests.get(url, headers={'Api-Key': decksofkeyforge['key']})
@@ -48,6 +50,7 @@ else:
         f.write(data)
 
 deck = json.loads(data)['deck']
+deck_details = json.loads(data_kc)
 
 print(deck['name'], '\n')
 
@@ -86,7 +89,27 @@ def render_sas(canvas):
     top = top - 3.2*mm    
     canvas.drawString(left, top, "+" + str(deck['synergyRating']))
     top = top - 3.4*mm    
-    canvas.drawString(left, top, "-" + str(deck['antisynergyRating']))    
+    canvas.drawString(left, top, "-" + str(deck['antisynergyRating']))
+
+def  render_card_count(canvas):
+    canvas.setFont("Roboto Mono", 6)
+    canvas.setStrokeColor(black)
+    canvas.setFillColor(black)    
+    left = 1.01*inch
+    top = page_height-1.38*inch
+    canvas.drawString(left,top, str(deck_details['common_count']))
+    top = top-3.55*mm
+    canvas.drawString(left,top, str(deck_details['uncommon_count']))
+    left = left + 8.2*mm
+    top = page_height-1.38*inch
+    canvas.drawString(left,top, str(deck_details['rare_count']))
+    top = top-3.7*mm
+    canvas.drawString(left,top, str(deck_details['fixed_count']))
+    left = left + 7.8*mm
+    top = page_height-1.38*inch
+    canvas.drawString(left,top, str(deck_details['maverick_count']))
+    top = top-3.7*mm
+    canvas.drawString(left,top, str(deck_details['variant_count']))    
 
 c = canvas.Canvas(pdf, pagesize=landscape(letter))
 c.scale(scale_factor, scale_factor)
@@ -94,5 +117,6 @@ render_background(c)
 c.scale(2.78,2.78)
 render_deck_name(c)
 render_sas(c)
+render_card_count(c)
 c.showPage()
 c.save()
