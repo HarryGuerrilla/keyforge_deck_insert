@@ -136,6 +136,18 @@ def render_speed(canvas):
     top = top-6.1*mm
     canvas.drawString(left, top, deck['Disruption'].round(2).astype(str).rjust(5))
 
+def render_extras(canvas):
+    canvas.setFont("Roboto Mono", 8)
+    canvas.setStrokeColor(black)
+    canvas.setFillColor(black)
+    left = 47.6*mm
+    top = page_height-69.2*mm
+    canvas.drawString(left, top, deck['Raw Amber'].round(2).astype(str).rjust(5))
+    top = top-6.1*mm
+    canvas.drawString(left, top, deck['Key Cheat Count'].round(2).astype(str).rjust(5))
+    top = top-6.19*mm
+    canvas.drawString(left, top, deck['Card Archive Count'].round(2).astype(str).rjust(5))    
+
 # def  render_card_count(canvas):
 #     canvas.setFont("Roboto Mono", 6)
 #     canvas.setStrokeColor(black)
@@ -166,6 +178,7 @@ render_aerc(c)
 render_aember(c)
 render_board(c)
 render_speed(c)
+render_extras(c)
 #render_card_count(c)
 c.showPage()
 c.save()
