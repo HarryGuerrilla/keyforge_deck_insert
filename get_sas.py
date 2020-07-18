@@ -1,4 +1,6 @@
 import requests
+import pprint
+import time
 from requests.auth import HTTPBasicAuth
 from api import keyforge_compendium
 from api import decksofkeyforge
@@ -10,175 +12,467 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.pagesizes import landscape
 from reportlab.lib.units import inch, mm
 from reportlab.lib.utils import ImageReader
-from reportlab.pdfbase import pdfmetrics 
+from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.graphics.shapes import *
 from reportlab.graphics import renderPM
-
 from read_csv import decks
-
+from read_csv import cards
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
+
+format = {
+    'background': (0*mm,0*mm),
+    'deck_name': (124.46*mm,10.16*mm),
+    'house_1': (0.9*mm, 75.2*mm),
+    'house_2': (0.9*mm, 64.2*mm),
+    'house_3': (0.9*mm, 53.2*mm),
+    'house_1s': (37.1*mm, 76.6*mm),
+    'house_2s': (37.1*mm, 69.9*mm),
+    'house_3s': (37.1*mm, 63.2*mm),
+    'stars': (7.9*mm, 1.5*mm),
+    'name': (4*mm, 1.5*mm),
+    'amber_control': (22.7*mm, 41.8*mm),
+    'expected_amber': (22.7*mm, 35.6*mm),
+    'amber_protection': (22.7*mm, 29.5*mm),
+    'artifact_control': (59.3*mm, 41.8*mm),
+    'creature_control': (59.3*mm, 35.6*mm),
+    'effective_power': (22.7*mm, 23.7*mm),
+    'creature_protection': (22.7*mm, 17.5*mm),
+    'efficiency': (41*mm, 41.8*mm),
+    'disruption': (41*mm, 35.6*mm),
+    'bonus_amber': (41*mm, 23.7*mm),
+    'key_cheat': (41*mm, 17.5*mm),
+    'archive': (41*mm, 11.4*mm),
+    'house_cheating': (59.3*mm, 41.8*mm),
+    'other': (41*mm, 5.2*mm),
+    'actions': (59.3*mm, 23.7*mm),
+    'creatures': (59.3*mm, 17.6*mm),
+    'artifacts': (59.3*mm, 11.4*mm),
+    'upgrades': (59.3*mm, 5.2*mm),
+    'card_rating': (15.7*mm, 79.5*mm),
+    'synergy': (15.7*mm, 76.1*mm),
+    'antisynergy': (15.7*mm, 72.8*mm),
+    'sas': (14*mm, 65.2*mm),
+    'aerc': (38*mm, 76.9*mm),
+    'common': (19.3*mm, 56.9*mm),
+    'uncommon': (19.3*mm, 53.4*mm),
+    'rare': (27.3*mm, 56.9*mm),
+    'special': (27.3*mm, 53.4*mm),
+    'maverick': (35.2*mm, 56.9*mm),
+    'legacy': (35.2*mm, 53.4*mm),
+    'anomaly': (42.4*mm, 56.9*mm),
+    'house_1_aerc': (44.7*mm, 78*mm),
+    'house_2_aerc': (44.7*mm, 71.4*mm),
+    'house_3_aerc': (44.7*mm, 64.7*mm),
+    'win_start': (53.67*mm, 74.75*mm),
+    'win_diff': (4.2*mm, -4.18*mm),
+    'loss_start': (63.1*mm, 74.75*mm),
+    'loss_diff': (4.2*mm, -4.18*mm),
+    'sas_updated': (72*mm, 1.5*mm),
+    'set_icon': (19.8*mm, 3.5*mm)
+}
+
+def render_images(deck, canvas, left, top, s):
+    # Background
+    bg = 'assets/insert_bg.png'
+    canvas.drawImage(bg, (left + format['background'][0])/s, (top + format['background'][1])/s, mask='auto')
+
+    # House Logos
+    houses = deck['Houses'].split(' | ')
+    house1 = "assets/" + houses[0].lower() + "_l.png"
+    canvas.drawImage(house1, (left + format['house_1'][0])/s, (top + format['house_1'][1])/s, mask='auto')
+    house1s = "assets/" + houses[0].lower() +  "_s.png"
+    canvas.drawImage(house1s, (left + format['house_1s'][0])/s, (top + format['house_1s'][1])/s, mask='auto')
+    house2 = "assets/" + houses[1].lower() + "_l.png"
+    canvas.drawImage(house2, (left + format['house_2'][0])/s, (top + format['house_2'][1])/s, mask='auto')
+    house2s = "assets/" + houses[1].lower() + "_s.png"
+    canvas.drawImage(house2s, (left + format['house_2s'][0])/s, (top + format['house_2s'][1])/s, mask='auto')
+    house3 = "assets/" + houses[2].lower() + "_l.png"
+    canvas.drawImage(house3, (left + format['house_3'][0])/s, (top + format['house_3'][1])/s, mask='auto')
+    house3s = "assets/" + houses[2].lower() + "_s.png"
+    canvas.drawImage(house3s, (left + format['house_3s'][0])/s, (top + format['house_3s'][1])/s, mask='auto')
+
+    # Stars/
+    if deck['Sas Percentile'] >= 99.99:
+        stars = "assets/5p_star.png"
+    elif deck['Sas Percentile'] >= 99.9:
+        stars = "assets/5_star.png"
+    elif deck['Sas Percentile'] >= 99:
+        stars = "assets/4.5_star.png"
+    elif deck['Sas Percentile'] >= 90:
+        stars = "assets/4_star.png"
+    elif deck['Sas Percentile'] >= 75:
+        stars = "assets/3.5_star.png"
+    elif deck['Sas Percentile'] < 75 and deck['Sas Percentile'] > 25:
+        stars = "assets/3_star.png"
+    elif deck['Sas Percentile'] <= 25:
+        stars = "assets/2.5_star.png"
+    elif deck['Sas Percentile'] <= 10:
+        stars = "assets/2_star.png"
+    elif deck['Sas Percentile'] <= 1:
+        stars = "assets/1.5_star.png"
+    elif deck['Sas Percentile'] <= 0.1:
+        stars = "assets/1_star.png"
+    elif deck['Sas Percentile'] <= 0.01:
+        stars = "assets/0.5_star.png"
+    else:
+        start = "assets/0.5_star.png"
+
+    canvas.drawImage(stars, (left + format['stars'][0])/s, (top + format['stars'][1])/s, mask='auto')
+
+    # Set Icon
+    icon = 'assets/set_' + deck['Expansion'] + '.png'
+    canvas.drawImage(icon, (left + format['set_icon'][0])/s, (top + format['set_icon'][1])/s, mask='auto')
+
+def render_win_loss(deck, canvas, left, top, s):
+    wins = int(deck['Wins'])
+    l = (left + format['win_start'][0])/s
+    t = (top + format['win_start'][1])/s
+
+    for x in range(1, wins+1):
+        canvas.drawImage('assets/win.png', l, t, mask='auto')
+        if x % 2 == 1:
+            l += (format['win_diff'][0]/s)
+        else:
+            t += (format['win_diff'][1]/s)
+            l = (left + format['win_start'][0])/s
+
+    losses = int(deck['Losses'])
+    l = (left + format['loss_start'][0])/s
+    t = (top + format['loss_start'][1])/s
+
+    for x in range(1, losses+1):
+        canvas.drawImage('assets/loss.png', l, t, mask='auto')
+        if x % 2 == 1:
+            l += (format['loss_diff'][0]/s)
+        else:
+            t += (format['loss_diff'][1]/s)
+            l = (left + format['loss_start'][0])/s
+
+def render_text(deck, canvas, left, top):
+    # deck name
+    canvas.setStrokeColor(black)
+    canvas.setFillColor(black)
+    canvas.setFont("Roboto", 9)
+    canvas.rotate(90)
+    name_parts = deck['Name'].split(' ')
+    char_count = 0
+    name_line_1 = ""
+    name_line_2 = ""
+    while len(name_parts) >0:
+        char_count += len(name_parts[0] + " ")
+        if char_count <= 26:
+            name_line_1 += name_parts[0] + " "
+        else:
+            name_line_2 += name_parts[0] + " "
+        name_parts.pop(0)
+
+    canvas.drawString(top + format['name'][1], (left + format['name'][0])*-1, name_line_1)
+    canvas.drawString(top + format['name'][1], (left + format['name'][0] + 3*mm)*-1, name_line_2)
+
+    canvas.setFont("Roboto", 7)
+    canvas.drawString(
+        (top + format['sas_updated'][1]),
+        (left + format['sas_updated'][0])*-1,
+        "SAS updated: " + str(deck['Last SAS Update'])
+    )
+    canvas.rotate(-90)
+
+    canvas.setFont("Roboto Mono", 8)
+    canvas.drawString(
+        left + format['amber_control'][0],
+        top + format['amber_control'][1],
+        str(round(deck['Amber Control'], 2)).rjust(5)
+    )
+    canvas.drawString(
+        left + format['expected_amber'][0],
+        top + format['expected_amber'][1],
+        str(round(deck['Expected Amber'], 2)).rjust(5)
+    )
+    # canvas.drawString(
+    #     left + format['amber_protection'][0],
+    #     top + format['amber_protection'][1],
+    #     str(round(deck['Aember Protection'], 2)).rjust(5)
+    # )
+    canvas.drawString(
+        left + format['artifact_control'][0],
+        top + format['artifact_control'][1],
+        str(round(deck['Artifact Control'], 2)).rjust(5)
+    )
+    canvas.drawString(
+        left + format['creature_control'][0],
+        top + format['creature_control'][1],
+        str(round(deck['Creature Control'], 2)).rjust(5)
+    )
+    canvas.drawString(
+        left + format['effective_power'][0],
+        top + format['effective_power'][1],
+        str(round(deck['Effective Power'], 2)).rjust(5)
+    )
+    canvas.drawString(
+        left + format['creature_protection'][0],
+        top + format['creature_protection'][1],
+        str(round(deck['Creature Protection'], 2)).rjust(5)
+    )
+    canvas.drawString(
+        left + format['efficiency'][0],
+        top + format['efficiency'][1],
+        str(round(deck['Efficiency'], 2)).rjust(5)
+    )
+    canvas.drawString(
+        left + format['disruption'][0],
+        top + format['disruption'][1],
+        str(round(deck['Disruption'], 2)).rjust(5)
+    )
+    canvas.drawString(
+        left + format['bonus_amber'][0],
+        top + format['bonus_amber'][1],
+        str(round(deck['Raw Amber'])).rjust(5)
+    )
+    canvas.drawString(
+        left + format['key_cheat'][0],
+        top + format['key_cheat'][1],
+        str(round(deck['Key Cheat Count'])).rjust(5)
+    )
+    canvas.drawString(
+        left + format['archive'][0],
+        top + format['archive'][1],
+        str(round(deck['Card Archive Count'])).rjust(5)
+    )
+    # canvas.drawString(
+    #     left + format['house_cheating'][0],
+    #     top + format['house_cheating'][1],
+    #     str(round(deck['House Cheating'], 2)).rjust(5)
+    # )
+    canvas.drawString(
+        left + format['other'][0],
+        top + format['other'][1],
+        str(round(deck['Other'], 2)).rjust(5)
+    )
+    canvas.drawString(
+        left + format['actions'][0],
+        top + format['actions'][1],
+        str(round(deck['Action Count'])).rjust(5)
+    )
+    canvas.drawString(
+        left + format['creatures'][0],
+        top + format['creatures'][1],
+        str(round(deck['Creature Count'])).rjust(5)
+    )
+    canvas.drawString(
+        left + format['artifacts'][0],
+        top + format['artifacts'][1],
+        str(round(deck['Artifact Count'])).rjust(5)
+    )
+    canvas.drawString(
+        left + format['upgrades'][0],
+        top + format['upgrades'][1],
+        str(round(deck['Upgrade Count'])).rjust(5)
+    )
+
+    canvas.setFont("Roboto Mono", 8)
+    canvas.drawString(
+        left + format['common'][0],
+        top + format['common'][1],
+        rarities['common'].rjust(2)
+    )
+    canvas.drawString(
+        left + format['uncommon'][0],
+        top + format['uncommon'][1],
+        rarities['uncommon'].rjust(2)
+    )
+    canvas.drawString(
+        left + format['rare'][0],
+        top + format['rare'][1],
+        rarities['rare'].rjust(2)
+    )
+    canvas.drawString(
+        left + format['special'][0],
+        top + format['special'][1],
+        rarities['special'].rjust(2)
+    )
+    canvas.drawString(
+        left + format['maverick'][0],
+        top + format['maverick'][1],
+        rarities['maverick'].rjust(2)
+    )
+    canvas.drawString(
+        left + format['legacy'][0],
+        top + format['legacy'][1],
+        rarities['legacy'].rjust(2)
+    )
+    canvas.drawString(
+        left + format['anomaly'][0],
+        top + format['anomaly'][1],
+        rarities['anomaly'].rjust(2)
+    )
+
+    canvas.setFont("Roboto Mono", 20)
+    canvas.setStrokeColor(white)
+    canvas.setFillColor(white)
+    canvas.drawString(
+        left + format['sas'][0],
+        top + format['sas'][1],
+        str(deck['Sas Rating']).rjust(3)
+    )
+    # canvas.drawString(
+    #     left + format['aerc'][0],
+    #     top + format['aerc'][1],
+    #     str(round(deck['Raw Aerc Score'])).rjust(2)
+    # )
+
+    canvas.setFont("Roboto Mono", 9)
+    canvas.drawString(
+        left + format['card_rating'][0],
+        top + format['card_rating'][1],
+        str(deck['Raw Aerc Score']).rjust(3)
+    )
+    canvas.drawString(
+        left + format['synergy'][0],
+        top + format['synergy'][1],
+        "+" + str(deck['Synergy Rating']).rjust(2)
+    )
+    canvas.drawString(
+        left + format['antisynergy'][0],
+        top + format['antisynergy'][1],
+        "-" + str(deck['Antisynergy Rating']).rjust(2)
+    )
+    canvas.setFont("Roboto Mono", 12)
+    canvas.drawString(
+        left + format['house_1_aerc'][0],
+        top + format['house_1_aerc'][1],
+        #str(round(house_aerc[deck['Houses'].split(',')[0]])).rjust(2)
+        str(round(deck['House 1 SAS'])).rjust(2)
+    )
+    canvas.drawString(
+        left + format['house_2_aerc'][0],
+        top + format['house_2_aerc'][1],
+        #str(round(house_aerc[deck['Houses'].split(',')[1]])).rjust(2)
+        str(round(deck['House 2 SAS'])).rjust(2)
+    )
+    canvas.drawString(
+        left + format['house_3_aerc'][0],
+        top + format['house_3_aerc'][1],
+        #str(round(house_aerc[deck['Houses'].split(',')[2]])).rjust(2)
+        str(round(deck['House 3 SAS'])).rjust(2)
+    )
+
+def get_card_rarity_count(deck_id):
+    deck_file = os.path.join('decks', deck_id + '.json')
+    if os.path.isfile(deck_file):
+        print('deck already saved')
+        with open(deck_file, 'r') as f:
+            data = json.load(f)
+    else:
+        url = 'https://www.keyforgegame.com/api/decks/' + deck_id + '/?links=cards'
+        print('sleeping...')
+        time.sleep(35)
+        print('done')
+        r = requests.get(url)
+        print('downloaded deck')
+        data = r.text
+        with open(deck_file, 'w+') as f:
+            f.write(data)
+        data = json.loads(data)
+
+    commons = 0
+    uncommons = 0
+    rares = 0
+    specials = 0
+    mavericks = 0
+    anomalies = 0
+    legacies = 0
+
+    for card in data['data']['_links']['cards']:
+        if card in data['data']['set_era_cards']['Anomaly']:
+            anomalies += 1
+
+        if card in data['data']['set_era_cards']['Legacy']:
+            legacies += 1
+
+        for c in data['_linked']['cards']:
+            if c['id'] == card:
+                commons += 1 if c['rarity'] == "Common" else 0
+                uncommons += 1 if c['rarity'] == "Uncommon" else 0
+                rares += 1 if c['rarity'] == "Rare" else 0
+                specials += 1 if c['rarity'] == "FIXED" else 0
+                mavericks += 1 if c['is_maverick'] == "True" else 0
+
+    card_count = {
+        'common': str(commons),
+        'uncommon': str(uncommons),
+        'rare': str(rares),
+        'special': str(specials),
+        'maverick': str(mavericks),
+        'anomaly': str(anomalies),
+        'legacy': str(legacies)
+    }
+
+    return card_count
+
+def get_card_ratings_by_house(deck):
+    card_list = deck['House 1 Cards'].split('|')
+    card_list += deck['House 2 Cards'].split('|')
+    card_list += deck['House 3 Cards'].split('|')
+    card_data = cards[cards['Name'].isin(card_list)]
+    card_data = card_data[['House', 'Aerc Min']]
+    card_data = card_data.groupby(['House']).sum().to_dict()['Aerc Min']
+
+    return card_data
 
 pdfmetrics.registerFont(TTFont('Roboto', 'Roboto-Regular.ttf'))
 pdfmetrics.registerFont(TTFont('Roboto Mono', 'RobotoMono-Regular.ttf'))
 
-deck_id = 'cd7591d1-1e1c-4fca-884f-f6d280b93269'
-deck_dir = os.path.join('decks', deck_id)
-filename = os.path.join(deck_dir, deck_id)
-pdf = os.path.join(deck_dir, 'tuckbox.pdf')
+pdf = os.path.join('decks', 'insert.pdf')
 page_width, page_height = landscape(letter)
+
+print("letter: ", page_width, page_height)
 scale_factor = 0.36
 
-
-# if os.path.isdir(deck_dir):
-#     print('deck already saved')
-#     with open(filename + '_dok', 'r') as f:
-#         data = f.read()
-#     with open(filename + '_kc', 'r') as f:
-#         data_kc = f.read()
-# else:
-#     url = 'https://decksofkeyforge.com/public-api/v3/decks/' + deck_id
-#     r = requests.get(url, headers={'Api-Key': decksofkeyforge['key']})
-#     os.makedirs(deck_dir, exist_ok=True)
-#     data = r.text
-#     with open(filename + '_dok', 'w+') as f:
-#         f.write(data)
-
-#     url = 'https://keyforge-compendium.com/api/v1/decks/' + deck_id
-#     r = requests.get(url, auth=HTTPBasicAuth(keyforge_compendium['user'], keyforge_compendium['password']))
-#     data = r.text
-#     with open(filename + '_kc', 'w+') as f:
-#         f.write(data)
-
-deck = decks.iloc[0]
-print(deck)
-#deck_details = json.loads(data_kc)
-
-print(deck['Name'], '\n')
-
-def print_cards(x, y, cards, canvas):
-    canvas.setFont("Roboto", 10)
-    for card in cards:
-        canvas.drawString(x, y, card)
-        y -= 10
-
-def render_background(canvas):
-    img = ImageReader('assets/insert_bg.png')
-    iw, ih = img.getSize()
-    top = page_height/scale_factor-ih-0.25*inch/scale_factor
-    left = 0.25*inch/scale_factor
-    canvas.drawImage('assets/insert_bg.png', left, top, mask='auto')
-
-def render_deck_name(canvas):
-    canvas.setFont("Roboto", 8)
-    left = -0.4*inch
-    top = 4.9*inch
-    canvas.rotate(90)
-    canvas.drawString(top, left, deck['Name'])
-    canvas.rotate(-90)
-
-def render_sas(canvas):
-    canvas.setFont("Roboto Mono", 20)
-    canvas.setStrokeColor(white)
-    canvas.setFillColor(white)
-    left = 0.81*inch
-    top = page_height-1.09*inch
-    canvas.drawString(left, top, deck['Sas Rating'].astype(str).rjust(3))
-    canvas.setFont("Roboto Mono", 6)
-    top = page_height-0.506*inch
-    left = left + 3.5*mm
-    canvas.drawString(left, top, deck['Cards Rating'].astype(str).rjust(3))
-    top = top - 3.2*mm    
-    canvas.drawString(left, top, ("+" + deck['Synergy Rating'].astype(str)).rjust(3))
-    top = top - 3.4*mm    
-    canvas.drawString(left, top, ("-" + deck['Antisynergy Rating'].astype(str)).rjust(3))
-
-def render_aerc(canvas):
-    canvas.setFont("Roboto Mono", 20)
-    canvas.setStrokeColor(white)
-    canvas.setFillColor(white)
-    left = 40*mm
-    top = page_height-16*mm
-    canvas.drawString(left, top, deck['Aerc Score'].round().astype(int).astype(str).rjust(3))
-
-def render_aember(canvas):
-    canvas.setFont("Roboto Mono", 8)
-    canvas.setStrokeColor(black)
-    canvas.setFillColor(black)
-    left = 29.3*mm
-    top = page_height-51.1*mm
-    canvas.drawString(left, top, deck['Amber Control'].round(2).astype(str).rjust(5))
-    top = top-6*mm
-    canvas.drawString(left, top, deck['Expected Amber'].round(2).astype(str).rjust(5))
-    top = top-6.2*mm
-    canvas.drawString(left, top, deck['Aember Protection'].round(2).astype(str).rjust(5))
-
-def render_board(canvas):
-    canvas.setFont("Roboto Mono", 8)
-    canvas.setStrokeColor(black)
-    canvas.setFillColor(black)
-    left = 29.3*mm
-    top = page_height-75.2*mm
-    canvas.drawString(left, top, deck['Artifact Control'].round(2).astype(str).rjust(5))
-    top = top-6.1*mm
-    canvas.drawString(left, top, deck['Creature Control'].round(2).astype(str).rjust(5))
-    top = top-6.1*mm
-    canvas.drawString(left, top, deck['Effective Power'].round(2).astype(str).rjust(5))
-
-def render_speed(canvas):
-    canvas.setFont("Roboto Mono", 8)
-    canvas.setStrokeColor(black)
-    canvas.setFillColor(black)
-    left = 47.6*mm
-    top = page_height-51.1*mm
-    canvas.drawString(left, top, deck['Efficiency'].round(2).astype(str).rjust(5))
-    top = top-6.1*mm
-    canvas.drawString(left, top, deck['Disruption'].round(2).astype(str).rjust(5))
-
-def render_extras(canvas):
-    canvas.setFont("Roboto Mono", 8)
-    canvas.setStrokeColor(black)
-    canvas.setFillColor(black)
-    left = 47.6*mm
-    top = page_height-69.2*mm
-    canvas.drawString(left, top, deck['Raw Amber'].round(2).astype(str).rjust(5))
-    top = top-6.1*mm
-    canvas.drawString(left, top, deck['Key Cheat Count'].round(2).astype(str).rjust(5))
-    top = top-6.19*mm
-    canvas.drawString(left, top, deck['Card Archive Count'].round(2).astype(str).rjust(5))    
-
-# def  render_card_count(canvas):
-#     canvas.setFont("Roboto Mono", 6)
-#     canvas.setStrokeColor(black)
-#     canvas.setFillColor(black)    
-#     left = 1.01*inch
-#     top = page_height-1.38*inch
-#     canvas.drawString(left,top, str(deck_details['common_count']))
-#     top = top-3.55*mm
-#     canvas.drawString(left,top, str(deck_details['uncommon_count']))
-#     left = left + 8.2*mm
-#     top = page_height-1.38*inch
-#     canvas.drawString(left,top, str(deck_details['rare_count']))
-#     top = top-3.7*mm
-#     canvas.drawString(left,top, str(deck_details['fixed_count']))
-#     left = left + 7.8*mm
-#     top = page_height-1.38*inch
-#     canvas.drawString(left,top, str(deck_details['maverick_count']))
-#     top = top-3.7*mm
-#     canvas.drawString(left,top, str(deck_details['variant_count']))    
+insert_width = 73.5*mm
+insert_height = 86.5*mm
+margin = 10*mm
+current_width = margin
+current_height = margin
+gutter = 5*mm
 
 c = canvas.Canvas(pdf, pagesize=landscape(letter))
-c.scale(scale_factor, scale_factor)
-render_background(c)
-c.scale(2.78,2.78)
-render_deck_name(c)
-render_sas(c)
-render_aerc(c)
-render_aember(c)
-render_board(c)
-render_speed(c)
-render_extras(c)
-#render_card_count(c)
+
+for index, deck in decks.iterrows():
+    print(deck['Name'])
+    print(deck['Master Vault Link'])
+
+    if current_width + insert_width + gutter + margin < page_width:
+        current_width = current_width
+        current_height = current_height
+        add_width = insert_width + gutter
+        add_height = 0
+    elif current_height + ((insert_height + gutter)*2) + margin < page_height:
+        current_height = current_height + insert_height + gutter
+        current_width = margin
+        add_width = insert_width + gutter
+        add_height = 0
+    else:
+        current_width = margin
+        current_height = margin
+        add_width = insert_width + gutter
+        add_height = 0
+        c.showPage()
+
+
+
+    rarities = get_card_rarity_count(deck['Master Vault Link'].rsplit('/', 1)[-1])
+    house_aerc  = get_card_ratings_by_house(deck)
+    c.scale(scale_factor, scale_factor) # set dpi to 200 for images
+    render_images(deck, c, current_width, current_height, scale_factor)
+    render_win_loss(deck, c, current_width, current_height, scale_factor)
+
+    c.scale(2.78,2.78) # go back to default dpi
+    render_text(deck, c, current_width, current_height)
+
+    current_width += add_width
+    current_height += add_height
+
 c.showPage()
 c.save()
