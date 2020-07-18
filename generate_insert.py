@@ -394,16 +394,6 @@ def get_card_rarity_count(deck_id):
 
     return card_count
 
-def get_card_ratings_by_house(deck):
-    card_list = deck['House 1 Cards'].split('|')
-    card_list += deck['House 2 Cards'].split('|')
-    card_list += deck['House 3 Cards'].split('|')
-    card_data = cards[cards['Name'].isin(card_list)]
-    card_data = card_data[['House', 'Aerc Min']]
-    card_data = card_data.groupby(['House']).sum().to_dict()['Aerc Min']
-
-    return card_data
-
 def main():
     pdfmetrics.registerFont(TTFont('Roboto', 'Roboto-Regular.ttf'))
     pdfmetrics.registerFont(TTFont('Roboto Mono', 'RobotoMono-Regular.ttf'))
