@@ -191,11 +191,6 @@ def render_text(deck, canvas, left, top):
         top + format['expected_amber'][1],
         str(round(deck['Expected Amber'], 2)).rjust(5)
     )
-    # canvas.drawString(
-    #     left + format['amber_protection'][0],
-    #     top + format['amber_protection'][1],
-    #     str(round(deck['Aember Protection'], 2)).rjust(5)
-    # )
     canvas.drawString(
         left + format['artifact_control'][0],
         top + format['artifact_control'][1],
@@ -241,11 +236,6 @@ def render_text(deck, canvas, left, top):
         top + format['archive'][1],
         str(round(deck['Card Archive Count'])).rjust(5)
     )
-    # canvas.drawString(
-    #     left + format['house_cheating'][0],
-    #     top + format['house_cheating'][1],
-    #     str(round(deck['House Cheating'], 2)).rjust(5)
-    # )
     canvas.drawString(
         left + format['other'][0],
         top + format['other'][1],
@@ -317,11 +307,6 @@ def render_text(deck, canvas, left, top):
         top + format['sas'][1],
         str(deck['Sas Rating']).rjust(3)
     )
-    # canvas.drawString(
-    #     left + format['aerc'][0],
-    #     top + format['aerc'][1],
-    #     str(round(deck['Raw Aerc Score'])).rjust(2)
-    # )
 
     canvas.setFont("Roboto Mono", 9)
     canvas.drawString(
@@ -343,19 +328,16 @@ def render_text(deck, canvas, left, top):
     canvas.drawString(
         left + format['house_1_aerc'][0],
         top + format['house_1_aerc'][1],
-        #str(round(house_aerc[deck['Houses'].split(',')[0]])).rjust(2)
         str(round(deck['House 1 SAS'])).rjust(2)
     )
     canvas.drawString(
         left + format['house_2_aerc'][0],
         top + format['house_2_aerc'][1],
-        #str(round(house_aerc[deck['Houses'].split(',')[1]])).rjust(2)
         str(round(deck['House 2 SAS'])).rjust(2)
     )
     canvas.drawString(
         left + format['house_3_aerc'][0],
         top + format['house_3_aerc'][1],
-        #str(round(house_aerc[deck['Houses'].split(',')[2]])).rjust(2)
         str(round(deck['House 3 SAS'])).rjust(2)
     )
 
@@ -464,7 +446,6 @@ def main():
 
         global rarities
         rarities = get_card_rarity_count(deck['Master Vault Link'].rsplit('/', 1)[-1])
-        #house_aerc  = get_card_ratings_by_house(deck)
         c.scale(scale_factor, scale_factor) # set dpi to 200 for images
         render_images(deck, c, current_width, current_height, scale_factor)
         render_win_loss(deck, c, current_width, current_height, scale_factor)
