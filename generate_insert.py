@@ -1,6 +1,7 @@
 import requests
 import pprint
 import time
+from datetime import date
 from requests.auth import HTTPBasicAuth
 from api import keyforge_compendium
 from api import decksofkeyforge
@@ -16,8 +17,8 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.graphics.shapes import *
 from reportlab.graphics import renderPM
-from read_csv import decks
-from read_csv import cards
+from include.read_csv import decks
+from include.read_csv import cards
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
@@ -359,7 +360,7 @@ def render_text(deck, canvas, left, top):
     )
 
 def get_card_rarity_count(deck_id):
-    deck_file = os.path.join('decks', deck_id + '.json')
+    deck_file = os.path.join('data', 'deck_cache', deck_id + '.json')
     if os.path.isfile(deck_file):
         print('deck already saved')
         with open(deck_file, 'r') as f:
@@ -397,7 +398,7 @@ def get_card_rarity_count(deck_id):
                 uncommons += 1 if c['rarity'] == "Uncommon" else 0
                 rares += 1 if c['rarity'] == "Rare" else 0
                 specials += 1 if c['rarity'] == "FIXED" else 0
-                mavericks += 1 if c['is_maverick'] == "True" else 0
+                mavericks += 1 if c['is_maverick'] == True else 0
 
     card_count = {
         'common': str(commons),
@@ -421,58 +422,61 @@ def get_card_ratings_by_house(deck):
 
     return card_data
 
-pdfmetrics.registerFont(TTFont('Roboto', 'Roboto-Regular.ttf'))
-pdfmetrics.registerFont(TTFont('Roboto Mono', 'RobotoMono-Regular.ttf'))
+def main():
+    pdfmetrics.registerFont(TTFont('Roboto', 'Roboto-Regular.ttf'))
+    pdfmetrics.registerFont(TTFont('Roboto Mono', 'RobotoMono-Regular.ttf'))
 
-pdf = os.path.join('decks', 'insert.pdf')
-page_width, page_height = landscape(letter)
+    pdf = os.path.join('inserts', 'inserts_' + date.today().strftime('%Y-%m-%d') + '.pdf')
+    page_width, page_height = landscape(letter)
 
-print("letter: ", page_width, page_height)
-scale_factor = 0.36
+    print("letter: ", page_width, page_height)
+    scale_factor = 0.36
 
-insert_width = 73.5*mm
-insert_height = 86.5*mm
-margin = 10*mm
-current_width = margin
-current_height = margin
-gutter = 5*mm
+    insert_width = 73.5*mm
+    insert_height = 86.5*mm
+    margin = 10*mm
+    current_width = margin
+    current_height = margin
+    gutter = 5*mm
 
-c = canvas.Canvas(pdf, pagesize=landscape(letter))
+    c = canvas.Canvas(pdf, pagesize=landscape(letter))
 
-for index, deck in decks.iterrows():
-    print(deck['Name'])
-    print(deck['Master Vault Link'])
+    for index, deck in decks.iterrows():
+        print(deck['Name'])
+        print(deck['Master Vault Link'])
 
-    if current_width + insert_width + gutter + margin < page_width:
-        current_width = current_width
-        current_height = current_height
-        add_width = insert_width + gutter
-        add_height = 0
-    elif current_height + ((insert_height + gutter)*2) + margin < page_height:
-        current_height = current_height + insert_height + gutter
-        current_width = margin
-        add_width = insert_width + gutter
-        add_height = 0
-    else:
-        current_width = margin
-        current_height = margin
-        add_width = insert_width + gutter
-        add_height = 0
-        c.showPage()
+        if current_width + insert_width + gutter + margin < page_width:
+            current_width = current_width
+            current_height = current_height
+            add_width = insert_width + gutter
+            add_height = 0
+        elif current_height + ((insert_height + gutter)*2) + margin < page_height:
+            current_height = current_height + insert_height + gutter
+            current_width = margin
+            add_width = insert_width + gutter
+            add_height = 0
+        else:
+            current_width = margin
+            current_height = margin
+            add_width = insert_width + gutter
+            add_height = 0
+            c.showPage()
 
+        global rarities
+        rarities = get_card_rarity_count(deck['Master Vault Link'].rsplit('/', 1)[-1])
+        #house_aerc  = get_card_ratings_by_house(deck)
+        c.scale(scale_factor, scale_factor) # set dpi to 200 for images
+        render_images(deck, c, current_width, current_height, scale_factor)
+        render_win_loss(deck, c, current_width, current_height, scale_factor)
 
+        c.scale(2.78,2.78) # go back to default dpi
+        render_text(deck, c, current_width, current_height)
 
-    rarities = get_card_rarity_count(deck['Master Vault Link'].rsplit('/', 1)[-1])
-    house_aerc  = get_card_ratings_by_house(deck)
-    c.scale(scale_factor, scale_factor) # set dpi to 200 for images
-    render_images(deck, c, current_width, current_height, scale_factor)
-    render_win_loss(deck, c, current_width, current_height, scale_factor)
+        current_width += add_width
+        current_height += add_height
 
-    c.scale(2.78,2.78) # go back to default dpi
-    render_text(deck, c, current_width, current_height)
+    c.showPage()
+    c.save()
 
-    current_width += add_width
-    current_height += add_height
-
-c.showPage()
-c.save()
+if __name__ == "__main__":
+    main()

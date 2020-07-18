@@ -1,4 +1,5 @@
 api.py
-decks/*.json
+*.json
 *.csv
 *~*
+*.pdf
