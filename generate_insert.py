@@ -7,9 +7,13 @@ from api import keyforge_compendium
 from api import decksofkeyforge
 import json
 import os
+import sys
+import getopt
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import white, black
 from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import legal
+from reportlab.lib.pagesizes import A4
 from reportlab.lib.pagesizes import landscape
 from reportlab.lib.units import inch, mm
 from reportlab.lib.utils import ImageReader
@@ -18,7 +22,6 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.graphics.shapes import *
 from reportlab.graphics import renderPM
 from include.read_csv import decks
-from include.read_csv import cards
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
@@ -394,14 +397,45 @@ def get_card_rarity_count(deck_id):
 
     return card_count
 
-def main():
+def main(argv):
+    inputfile = ''
+    output = os.path.join('inserts', 'inserts_' + date.today().strftime('%Y-%m-%d') + '.pdf')
+    deck = ''
+    cards = ''
+    pagesize = 'letter'
+
+    try:
+        opts,  args = getopt.getopt(
+            argv,
+            "i:o:d:s:",
+            ["input=", "output=", "deck=", "pagesize="]
+        )
+    except getopt.GetoptError:
+        print('generate_insert.py -i <inputfile> -o <outputfile> -d <deck> -c <cards> -s <pagesize>')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-i", "--input"):
+            inputfile = arg
+        elif opt in ("-o", "--output"):
+            output = arg
+        elif opt in ("-d", "--deck"):
+            deck = arg
+        elif opt in ("-s", "--pagesize"):
+            pagesize =  arg
+
     pdfmetrics.registerFont(TTFont('Roboto', 'Roboto-Regular.ttf'))
     pdfmetrics.registerFont(TTFont('Roboto Mono', 'RobotoMono-Regular.ttf'))
 
-    pdf = os.path.join('inserts', 'inserts_' + date.today().strftime('%Y-%m-%d') + '.pdf')
-    page_width, page_height = landscape(letter)
+    pdf = output
+    if pagesize == 'letter':
+        pg_size = letter
+    elif pagesize == 'legal':
+        pg_size = legal
+    elif pagesize == 'A4':
+        pg_size = A4
+    page_width, page_height = landscape(pg_size)
 
-    print("letter: ", page_width, page_height)
+    #print("letter: ", page_width, page_height)
     scale_factor = 0.36
 
     insert_width = 73.5*mm
@@ -411,11 +445,15 @@ def main():
     current_height = margin
     gutter = 5*mm
 
-    c = canvas.Canvas(pdf, pagesize=landscape(letter))
+    c = canvas.Canvas(pdf, pagesize=landscape(pg_size))
 
-    for index, deck in decks.iterrows():
+    decks_to_print = decks(inputfile)
+    if deck != '':
+        decks_to_print = decks_to_print[decks_to_print["Master Vault Link"] == deck]
+
+    for index, deck in decks_to_print.iterrows():
         print(deck['Name'])
-        print(deck['Master Vault Link'])
+        #print(deck['Master Vault Link'])
 
         if current_width + insert_width + gutter + margin < page_width:
             current_width = current_width
@@ -450,4 +488,4 @@ def main():
     c.save()
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

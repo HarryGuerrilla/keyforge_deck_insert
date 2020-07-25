@@ -7,12 +7,26 @@ def get_newest_file(dir):
     filename = max(list_of_files, key=os.path.getmtime)
     return filename
 
-file = get_newest_file(os.path.join('data', 'dok', 'my_decks', '*.csv'))
+def cards(cards_f):
+    if cards_file == '':
+        cards_file = get_newest_file(os.path.join('data', 'dok', 'cards', '*.csv'))
+    else:
+        cards_file = cards_f
+    try:
+        cards = pd.read_csv(cards_file)
+    except:
+        raise Exception("Unable to read cards file.")
 
-cards_file = get_newest_file(os.path.join('data', 'dok', 'cards', '*.csv'))
+    return cards
 
+def decks(input_file):
+    if input_file == '':
+        file = get_newest_file(os.path.join('data', 'dok', 'my_decks', '*.csv'))
+    else:
+        file = input_file
+    try:
+        decks = pd.read_csv(file)
+    except:
+        raise Exception("Unable to read deck list.")
 
-decks = pd.read_csv(file)
-cards = pd.read_csv(cards_file)
-
-print(decks.sort_values('Sas Rating', ascending=False)[['Name']])
+    return decks
