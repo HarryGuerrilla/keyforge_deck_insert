@@ -5,11 +5,10 @@ import json
 import os
 import sys
 import getopt
+from include.read_csv import decks
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import white, black
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.pagesizes import legal
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import letter, legal, A4
 from reportlab.lib.pagesizes import landscape
 from reportlab.lib.units import inch, mm
 from reportlab.lib.utils import ImageReader
@@ -17,7 +16,6 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.graphics.shapes import *
 from reportlab.graphics import renderPM
-from include.read_csv import decks
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
