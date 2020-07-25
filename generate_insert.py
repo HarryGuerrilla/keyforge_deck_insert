@@ -1,10 +1,6 @@
 import requests
-import pprint
 import time
 from datetime import date
-from requests.auth import HTTPBasicAuth
-from api import keyforge_compendium
-from api import decksofkeyforge
 import json
 import os
 import sys
