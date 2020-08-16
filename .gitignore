@@ -3,4 +3,4 @@ api.py
 *.csv
 *~*
 *.pdf
-venv
+env
