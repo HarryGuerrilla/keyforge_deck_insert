@@ -436,8 +436,13 @@ def main(argv):
         elif opt in ("-s", "--pagesize"):
             pagesize =  arg
 
+<<<<<<< HEAD
     pdfmetrics.registerFont(TTFont('Roboto', 'assets/fonts/Roboto-Regular.ttf'))
     pdfmetrics.registerFont(TTFont('Roboto Mono', 'assets/fonts/RobotoMono-Regular.ttf'))
+=======
+    pdfmetrics.registerFont(TTFont('Roboto', 'Roboto-Regular.ttf'))
+    pdfmetrics.registerFont(TTFont('Roboto Mono', 'RobotoMono-Regular.ttf'))
+>>>>>>> d615f2ca2a5f8faa4f58c3180f0b77e3a1b92585
 
     pdf = output
     if pagesize == 'letter':
