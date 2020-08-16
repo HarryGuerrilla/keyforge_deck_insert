@@ -80,17 +80,17 @@ def render_images(deck, canvas, left, top, s):
 
     # House Logos
     houses = deck['Houses'].split(' | ')
-    house1 = "assets/" + houses[0].lower() + "_l.png"
+    house1 = "assets/icons/" + houses[0].lower() + "_l.png"
     canvas.drawImage(house1, (left + format['house_1'][0])/s, (top + format['house_1'][1])/s, mask='auto')
-    house1s = "assets/" + houses[0].lower() +  "_s.png"
+    house1s = "assets/icons/" + houses[0].lower() +  "_s.png"
     canvas.drawImage(house1s, (left + format['house_1s'][0])/s, (top + format['house_1s'][1])/s, mask='auto')
-    house2 = "assets/" + houses[1].lower() + "_l.png"
+    house2 = "assets/icons/" + houses[1].lower() + "_l.png"
     canvas.drawImage(house2, (left + format['house_2'][0])/s, (top + format['house_2'][1])/s, mask='auto')
-    house2s = "assets/" + houses[1].lower() + "_s.png"
+    house2s = "assets/icons/" + houses[1].lower() + "_s.png"
     canvas.drawImage(house2s, (left + format['house_2s'][0])/s, (top + format['house_2s'][1])/s, mask='auto')
-    house3 = "assets/" + houses[2].lower() + "_l.png"
+    house3 = "assets/icons/" + houses[2].lower() + "_l.png"
     canvas.drawImage(house3, (left + format['house_3'][0])/s, (top + format['house_3'][1])/s, mask='auto')
-    house3s = "assets/" + houses[2].lower() + "_s.png"
+    house3s = "assets/icons/" + houses[2].lower() + "_s.png"
     canvas.drawImage(house3s, (left + format['house_3s'][0])/s, (top + format['house_3s'][1])/s, mask='auto')
 
     # Stars/

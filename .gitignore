@@ -4,3 +4,4 @@ api.py
 *~*
 *.pdf
 env
+assets/icons/*.png
