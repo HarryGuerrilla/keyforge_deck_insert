@@ -25,7 +25,7 @@
   1. Clone the repository
 
      #+BEGIN_SRC sh
-     git clone ssh://tonypelaez@barlow.dreamhost.com/~/git/tuckbox.git keyforge_insert
+     git clone https://github.com/HarryGuerrilla/keyforge_deck_insert.git
      #+END_SRC
 
   2. Install dependencies
