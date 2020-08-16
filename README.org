@@ -1,0 +1,111 @@
+#+TITLE: Keyforge Deckbox Insert Generator
+#+AUTHOR: HarryGuerilla
+#+OPTIONS: toc:nil num:nil
+
+* Overview
+
+  [[file:assets/sample_tuckbox.png]]
+
+  This application generates inserts for [[http://keyforgegame.com][keyforge]] decks that are
+  specifically designed to work well with [[https://burgertokens.com/collections/frontpage/products/perfect-fit-deckboxes][burgertokens deckboxes]].
+  These inserts display the SAS ratings and statistics available on
+  [[http://decksofkeyforge.com][decksofkeyforge.com]].
+
+  [[file:assets/deckbox_display.jpg]]
+
+  The inserts are sized to fit a 37-card unsleeved deckbox, though it
+  will also work well with the 43-card sleeved size for double
+  sleeved decks.
+
+* Installation
+
+  This generator requires Python 3.  For more information on
+  installing Python 3, please go to [[https://python.org/downloads/][python.org]].
+
+  1. Clone the repository
+
+     #+BEGIN_SRC sh
+     git clone ssh://tonypelaez@barlow.dreamhost.com/~/git/tuckbox.git keyforge_insert
+     #+END_SRC
+
+  2. Install dependencies
+
+     #+BEGIN_SRC sh
+     cd keyforge_insert
+     python3 -m venv env
+     source env/bin/activate
+     pip install -r requirements.txt
+     #+END_SRC
+
+* Usage
+** Download list of decks from decksofkeyforge.com
+
+   Download a csv file of all your keyforge decks from
+   [[https://decksofkeyforge.com/][decksofkeyforge.com]] and save it in the following folder relative to
+   the root of this project.
+
+   #+BEGIN_EXAMPLE
+   data/dok/my_decks
+   #+END_EXAMPLE
+
+   If you want to generate the inserts for only a subset of your
+   decks, you can do so by editing the csv that is exported from
+   decksofkeyforge.com, and deleting any entries for decks you do not
+   want to generate an insert for.
+
+** Run Genertor
+
+   If you have not already done so, activate the python venv by
+   running the following command:
+
+   #+BEGIN_SRC sh
+   source env/bin/activate
+   #+END_SRC
+
+   Then run the script to generate a pdf of the inserts.
+
+   #+BEGIN_SRC sh
+   python3 generate_insert.py
+   #+END_SRC
+
+   Once the script completes, a pdf of the inserts will be saved in
+   the following location relative to the project root:
+
+   #+BEGIN_EXAMPLE
+   inserts/
+   #+END_EXAMPLE
+
+*** Options
+
+    The following options can be passed as command line arguments:
+
+    #+BEGIN_EXAMPLE
+    -i <input_file> | --input <input_file>
+    #+END_EXAMPLE
+
+    Select a specific csv file to generate the inserts from.  By
+    default the insert generator uses the most recent file in the
+    data/dok/my_decks folder.  Use this option if you want to change
+    the file used.
+
+    #+BEGIN_EXAMPLE
+    -o <output_file> | --output <output_file>
+    #+END_EXAMPLE
+
+    Use the option above to change the name and/or location of the pdf
+    that is generated.
+
+    #+BEGIN_EXAMPLE
+    -d <deck_url_of_mastervault> | --deck <deck_url_of_mastervault>
+    #+END_EXAMPLE
+
+    Use this option to generate an insert for only one deck in the csv
+    list of all decks.
+
+    #+BEGIN_EXAMPLE
+    -s <pagesize> | --pagesize <pagesize>
+    #+END_EXAMPLE
+
+    By default the insert generator generates a pdf in letter page
+    size.  Use this option to change the size of the output.
+    Acceptable  sizes are "letter", "legal", "A4"
