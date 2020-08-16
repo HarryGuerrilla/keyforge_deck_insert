@@ -66,7 +66,7 @@
    Then run the script to generate a pdf of the inserts.
 
    #+BEGIN_SRC sh
-   python3 generate_insert.py
+   python generate_insert.py
    #+END_SRC
 
    Once the script completes, a pdf of the inserts will be saved in
