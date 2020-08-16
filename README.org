@@ -31,8 +31,8 @@
   2. Install dependencies
 
      #+BEGIN_SRC sh
-     cd keyforge_insert
-     python3 -m venv env
+     cd keyforge_deck_insert
+     python -m venv env
      source env/bin/activate
      pip install -r requirements.txt
      #+END_SRC
