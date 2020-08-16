@@ -68,7 +68,9 @@ format = {
     'loss_start': (63.1*mm, 74.75*mm),
     'loss_diff': (4.2*mm, -4.18*mm),
     'sas_updated': (72*mm, 1.5*mm),
-    'set_icon': (19.8*mm, 3.5*mm)
+    'set_icon': (19.8*mm, 3.5*mm),
+    'win_tens': (52.5*mm, 79*mm),
+    'loss_tens': (66.8*mm, 79*mm)
 }
 
 def render_images(deck, canvas, left, top, s):
@@ -125,10 +127,12 @@ def render_images(deck, canvas, left, top, s):
 
 def render_win_loss(deck, canvas, left, top, s):
     wins = int(deck['Wins'])
+    win_tens = int((wins-1)/10)*10
+    wins = (wins-1) % 10 if wins > 0 else -1
     l = (left + format['win_start'][0])/s
     t = (top + format['win_start'][1])/s
 
-    for x in range(1, wins+1):
+    for x in range(1, wins+2):
         canvas.drawImage('assets/win.png', l, t, mask='auto')
         if x % 2 == 1:
             l += (format['win_diff'][0]/s)
@@ -137,16 +141,31 @@ def render_win_loss(deck, canvas, left, top, s):
             l = (left + format['win_start'][0])/s
 
     losses = int(deck['Losses'])
+    loss_tens = int((losses-1)/10)*10
+    losses = (losses-1) % 10 if losses > 0 else -1
     l = (left + format['loss_start'][0])/s
     t = (top + format['loss_start'][1])/s
 
-    for x in range(1, losses+1):
+    for x in range(1, losses+2):
         canvas.drawImage('assets/loss.png', l, t, mask='auto')
         if x % 2 == 1:
             l += (format['loss_diff'][0]/s)
         else:
             t += (format['loss_diff'][1]/s)
             l = (left + format['loss_start'][0])/s
+
+    if loss_tens > 0 or win_tens > 0:
+        canvas.setFont("Roboto Mono", 24)
+        canvas.drawString(
+            (left + format['win_tens'][0])*2.78,
+            (top + format['win_tens'][1])*2.78,
+            str(win_tens).rjust(2)
+        )
+        canvas.drawString(
+            (left + format['loss_tens'][0])*2.78,
+            (top + format['loss_tens'][1])*2.78,
+            str(loss_tens).rjust(2)
+        )
 
 def render_text(deck, canvas, left, top):
     # deck name
