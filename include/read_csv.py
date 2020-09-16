@@ -29,4 +29,6 @@ def decks(input_file):
     except:
         raise Exception("Unable to read deck list.")
 
+    decks = decks.fillna(0)
+
     return decks
