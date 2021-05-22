@@ -11,7 +11,8 @@ icons = {
     'saurian': 'https://cdn.keyforgegame.com/media/houses/Saurian.png',
     'shadows': 'https://cdn.keyforgegame.com/media/houses/Shadows.png',
     'staralliance': 'https://cdn.keyforgegame.com/media/houses/Star_Alliance.png',
-    'untamed': 'https://cdn.keyforgegame.com/media/houses/Untamed.png'
+    'untamed': 'https://cdn.keyforgegame.com/media/houses/Untamed.png',
+    'unfathomable': 'https://cdn.keyforgegame.com/media/houses/Unfathomable-2.png'
 }
 
 user_agent_string = ("Mozilla/5.0 (X11; Linux i686) " +
