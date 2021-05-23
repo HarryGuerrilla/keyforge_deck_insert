@@ -48,10 +48,11 @@ format = {
     'creatures': (59.3*mm, 17.6*mm),
     'artifacts': (59.3*mm, 11.4*mm),
     'upgrades': (59.3*mm, 5.2*mm),
-    'card_rating': (15.7*mm, 79.5*mm),
-    'synergy': (15.7*mm, 76.1*mm),
-    'antisynergy': (15.7*mm, 72.8*mm),
-    'sas': (14*mm, 65.2*mm),
+    'card_rating': (15.7*mm, 80*mm),
+    'synergy': (15.7*mm, 76.6*mm),
+    'antisynergy': (15.7*mm, 73.3*mm),
+    'meta':  (15.7*mm, 70*mm),
+    'sas': (14*mm, 63.6*mm),
     'aerc': (38*mm, 76.9*mm),
     'common': (19.3*mm, 56.9*mm),
     'uncommon': (19.3*mm, 53.4*mm),
@@ -339,6 +340,12 @@ def render_text(deck, canvas, left, top):
         left + format['antisynergy'][0],
         top + format['antisynergy'][1],
         "-" + str(deck['Antisynergy Rating']).rjust(2)
+    )
+    canvas.drawString(
+        left + format['meta'][0],
+        top + format['meta'][1],
+        "+" + str(deck['META Score']).rjust(2) if deck['META Score'] >= 0
+        else "-" + str(abs(deck['META Score'])).rjust(2)
     )
     canvas.setFont("Roboto Mono", 12)
     canvas.drawString(
