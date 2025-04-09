@@ -3,16 +3,20 @@ import os
 from PIL import Image
 
 icons = {
-    'brobnar': 'https://cdn.keyforgegame.com/media/houses/Brobnar.png',
-    'dis': 'https://cdn.keyforgegame.com/media/houses/Dis.png',
-    'logos': 'https://cdn.keyforgegame.com/media/houses/Logos.png',
-    'mars': 'https://cdn.keyforgegame.com/media/houses/Mars.png',
-    'sanctum': 'https://cdn.keyforgegame.com/media/houses/Sanctum.png',
-    'saurian': 'https://cdn.keyforgegame.com/media/houses/Saurian.png',
-    'shadows': 'https://cdn.keyforgegame.com/media/houses/Shadows.png',
-    'staralliance': 'https://cdn.keyforgegame.com/media/houses/Star_Alliance.png',
-    'untamed': 'https://cdn.keyforgegame.com/media/houses/Untamed.png',
-    'unfathomable': 'https://cdn.keyforgegame.com/media/houses/Unfathomable-2.png'
+    'brobnar': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Brobnar.png',
+    'dis': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Dis.png',
+    'logos': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Logos.png',
+    'mars': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Mars.png',
+    'sanctum': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Sanctum.png',
+    'saurian': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Saurian.png',
+    'shadows': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Shadows.png',
+    'staralliance': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Star_Alliance.png',
+    'untamed': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Untamed.png',
+    'unfathomable': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Unfathomable.png',
+    'ekwidon': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Ekwidon200.png',
+    'geistoid': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/KF_Geistoid.png',
+    'skyborn': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Skyborn.png',
+    'redemption': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Redemption.png'
 }
 
 user_agent_string = ("Mozilla/5.0 (X11; Linux i686) " +

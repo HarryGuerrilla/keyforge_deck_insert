@@ -241,7 +241,7 @@ def render_text(deck, canvas, left, top):
     canvas.drawString(
         left + format['bonus_amber'][0],
         top + format['bonus_amber'][1],
-        str(round(deck['Raw Amber'])).rjust(5)
+        str(round(deck['Bonus Amber'])).rjust(5)
     )
     canvas.drawString(
         left + format['key_cheat'][0],
@@ -341,12 +341,12 @@ def render_text(deck, canvas, left, top):
         top + format['antisynergy'][1],
         "-" + str(deck['Antisynergy Rating']).rjust(2)
     )
-    canvas.drawString(
-        left + format['meta'][0],
-        top + format['meta'][1],
-        "+" + str(deck['META Score']).rjust(2) if deck['META Score'] >= 0
-        else "-" + str(abs(deck['META Score'])).rjust(2)
-    )
+    # canvas.drawString(
+    #     left + format['meta'][0],
+    #     top + format['meta'][1],
+    #     "+" + str(deck['META Score']).rjust(2) if deck['META Score'] >= 0
+    #     else "-" + str(abs(deck['META Score'])).rjust(2)
+    # )
     canvas.setFont("Roboto Mono", 12)
     canvas.drawString(
         left + format['house_1_aerc'][0],
@@ -402,7 +402,7 @@ def get_card_rarity_count(deck_id):
                 commons += 1 if c['rarity'] == "Common" else 0
                 uncommons += 1 if c['rarity'] == "Uncommon" else 0
                 rares += 1 if c['rarity'] == "Rare" else 0
-                specials += 1 if c['rarity'] == "FIXED" else 0
+                specials += 1 if c['rarity'] == "Special" else 0
                 mavericks += 1 if c['is_maverick'] == True else 0
 
     card_count = {
