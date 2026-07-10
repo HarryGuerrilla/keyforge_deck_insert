@@ -5,6 +5,8 @@ import json
 import os
 import sys
 import getopt
+import qrcode
+from qrcode.image.pure import PyPNGImage
 from include.read_csv import decks
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import white, black
@@ -25,6 +27,7 @@ format = {
     'house_1': (0.9*mm, 75.2*mm),
     'house_2': (0.9*mm, 64.2*mm),
     'house_3': (0.9*mm, 53.2*mm),
+    'qrc': (1.8*mm, 43.2*mm),
     'house_1s': (37.1*mm, 76.6*mm),
     'house_2s': (37.1*mm, 69.9*mm),
     'house_3s': (37.1*mm, 63.2*mm),
@@ -125,6 +128,19 @@ def render_images(deck, canvas, left, top, s):
     # Set Icon
     icon = 'assets/set_' + deck['Expansion'] + '.png'
     canvas.drawImage(icon, (left + format['set_icon'][0])/s, (top + format['set_icon'][1])/s, mask='auto')
+
+    # QR Code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=2,
+        border=1
+    )
+    qr.add_data(deck['DoK Link'])
+    qr.make(fit=True)
+    qrc_img = qr.make_image(fill_color='black', back_color='white')
+    qrc_img.save('data/qrc/' + deck['Master Vault Link'].rsplit('/', 1)[-1] + '.png')
+    canvas.drawImage('data/qrc/' + deck['Master Vault Link'].rsplit('/', 1)[-1] + '.png', (left + format['qrc'][0])/s, (top + format['qrc'][1])/s)
 
 def render_win_loss(deck, canvas, left, top, s):
     wins = int(deck['Wins'])
