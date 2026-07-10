@@ -16,7 +16,8 @@ icons = {
     'ekwidon': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Ekwidon200.png',
     'geistoid': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/KF_Geistoid.png',
     'skyborn': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Skyborn.png',
-    'redemption': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Redemption.png'
+    'redemption': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/Redemption.png',
+    'ouboros': 'https://mastervault-storage-prod.s3.amazonaws.com/media/houses/ouboros.png'
 }
 
 user_agent_string = ("Mozilla/5.0 (X11; Linux i686) " +
