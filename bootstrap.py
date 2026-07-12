@@ -41,9 +41,14 @@ for icon in icons:
             f.write(response.read())
 
     image = Image.open(image_orig)
-    image.thumbnail((83, 83))
+    print("Saving house icons for " + icon)
+    bbox = image.getbbox()
+    image = image.crop(bbox)
+
+    # Save large thumbnail
+    image.thumbnail((79, 79))
     image.save(image_l)
 
-    image = Image.open(image_orig)
+    # Save small thumbnail
     image.thumbnail((48, 48))
     image.save(image_s)
