@@ -24,10 +24,11 @@ from reportlab.lib.styles import getSampleStyleSheet
 format = {
     'background': (0*mm,0*mm),
     'deck_name': (124.46*mm,10.16*mm),
-    'house_1': (0.9*mm, 75.2*mm),
-    'house_2': (0.9*mm, 64.2*mm),
-    'house_3': (0.9*mm, 53.2*mm),
-    'qrc': (1.8*mm, 43.2*mm),
+    'house_1': (1.2*mm, 75.2*mm),
+    'house_2': (1.2*mm, 64.1*mm),
+    'house_3': (1.2*mm, 53.2*mm),
+    #'qrc': (1.8*mm, 43.2*mm),
+    'qrc': (19.8*mm, 3.5*mm),
     'house_1s': (37.1*mm, 76.6*mm),
     'house_2s': (37.1*mm, 69.9*mm),
     'house_3s': (37.1*mm, 63.2*mm),
@@ -72,7 +73,8 @@ format = {
     'loss_start': (63.1*mm, 74.75*mm),
     'loss_diff': (4.2*mm, -4.18*mm),
     'sas_updated': (72*mm, 1.5*mm),
-    'set_icon': (19.8*mm, 3.5*mm),
+    #'set_icon': (19.8*mm, 3.5*mm),
+    'set_icon': (3.4*mm, 45.7*mm),
     'win_tens': (52.5*mm, 79*mm),
     'loss_tens': (66.8*mm, 79*mm)
 }
