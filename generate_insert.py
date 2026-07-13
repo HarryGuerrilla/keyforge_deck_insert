@@ -27,8 +27,7 @@ format = {
     'house_1': (1.2*mm, 75.2*mm),
     'house_2': (1.2*mm, 64.1*mm),
     'house_3': (1.2*mm, 53.2*mm),
-    #'qrc': (1.8*mm, 43.2*mm),
-    'qrc': (19.8*mm, 3.5*mm),
+    'qrc': (19*mm, 2.8*mm),
     'house_1s': (37.1*mm, 76.6*mm),
     'house_2s': (37.1*mm, 69.9*mm),
     'house_3s': (37.1*mm, 63.2*mm),
@@ -73,7 +72,6 @@ format = {
     'loss_start': (63.1*mm, 74.75*mm),
     'loss_diff': (4.2*mm, -4.18*mm),
     'sas_updated': (72*mm, 1.5*mm),
-    #'set_icon': (19.8*mm, 3.5*mm),
     'set_icon': (3.4*mm, 45.7*mm),
     'win_tens': (52.5*mm, 79*mm),
     'loss_tens': (66.8*mm, 79*mm)
@@ -136,13 +134,13 @@ def render_images(deck, canvas, left, top, s):
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=2,
-        border=1
+        border=4
     )
     qr.add_data(deck['DoK Link'])
     qr.make(fit=True)
     qrc_img = qr.make_image(fill_color='black', back_color='white')
-    qrc_img.save('data/qrc/' + deck['Master Vault Link'].rsplit('/', 1)[-1] + '.png')
-    canvas.drawImage('data/qrc/' + deck['Master Vault Link'].rsplit('/', 1)[-1] + '.png', (left + format['qrc'][0])/s, (top + format['qrc'][1])/s)
+    qrc_img.save('data/dok/qrc/' + deck['Master Vault Link'].rsplit('/', 1)[-1] + '.png')
+    canvas.drawImage('data/dok/qrc/' + deck['Master Vault Link'].rsplit('/', 1)[-1] + '.png', (left + format['qrc'][0])/s, (top + format['qrc'][1])/s)
 
 def render_win_loss(deck, canvas, left, top, s):
     wins = int(deck['Wins'])
@@ -491,7 +489,6 @@ def main(argv):
 
     for index, deck in decks_to_print.iterrows():
         print(deck['Name'])
-        #print(deck['Master Vault Link'])
 
         if current_width + insert_width + gutter + margin < page_width:
             current_width = current_width

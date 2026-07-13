@@ -5,4 +5,4 @@ api.py
 *.pdf
 env
 assets/icons/*.png
-data/qrc/*.png
+data/dok/qrc/*.png
