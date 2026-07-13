@@ -22,7 +22,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
 format = {
-    'background': (0*mm,0*mm),
+    'background': (0.1*mm,0*mm),
     'deck_name': (124.46*mm,10.16*mm),
     'house_1': (1.2*mm, 75.2*mm),
     'house_2': (1.2*mm, 64.1*mm),
