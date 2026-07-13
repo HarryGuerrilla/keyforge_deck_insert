@@ -79,55 +79,56 @@ format = {
 
 def render_images(deck, canvas, left, top, s):
     # Background
-    bg = 'assets/insert_bg.png'
+    bg = os.path.join('assets','insert_bg.png')
     canvas.drawImage(bg, (left + format['background'][0])/s, (top + format['background'][1])/s, mask='auto')
 
     # House Logos
+    icons_dir = os.path.join('assets', 'icons')
     houses = deck['Houses'].split(' | ')
-    house1 = "assets/icons/" + houses[0].lower() + "_l.png"
+    house1 = os.path.join(icons_dir,  houses[0].lower() + "_l.png")
     canvas.drawImage(house1, (left + format['house_1'][0])/s, (top + format['house_1'][1])/s, mask='auto')
-    house1s = "assets/icons/" + houses[0].lower() +  "_s.png"
+    house1s = os.path.join(icons_dir, houses[0].lower() +  "_s.png")
     canvas.drawImage(house1s, (left + format['house_1s'][0])/s, (top + format['house_1s'][1])/s, mask='auto')
-    house2 = "assets/icons/" + houses[1].lower() + "_l.png"
+    house2 = os.path.join(icons_dir, houses[1].lower() + "_l.png")
     canvas.drawImage(house2, (left + format['house_2'][0])/s, (top + format['house_2'][1])/s, mask='auto')
-    house2s = "assets/icons/" + houses[1].lower() + "_s.png"
+    house2s = os.path.join(icons_dir, houses[1].lower() + "_s.png")
     canvas.drawImage(house2s, (left + format['house_2s'][0])/s, (top + format['house_2s'][1])/s, mask='auto')
-    house3 = "assets/icons/" + houses[2].lower() + "_l.png"
+    house3 = os.path.join(icons_dir, houses[2].lower() + "_l.png")
     canvas.drawImage(house3, (left + format['house_3'][0])/s, (top + format['house_3'][1])/s, mask='auto')
-    house3s = "assets/icons/" + houses[2].lower() + "_s.png"
+    house3s = os.path.join(icons_dir, houses[2].lower() + "_s.png")
     canvas.drawImage(house3s, (left + format['house_3s'][0])/s, (top + format['house_3s'][1])/s, mask='auto')
 
     # Stars/
     if deck['Sas Percentile'] >= 99.99:
-        stars = "assets/5p_star.png"
+        stars = "5p_star.png"
     elif deck['Sas Percentile'] >= 99.9:
-        stars = "assets/5_star.png"
+        stars = "5_star.png"
     elif deck['Sas Percentile'] >= 99:
-        stars = "assets/4.5_star.png"
+        stars = "4.5_star.png"
     elif deck['Sas Percentile'] >= 90:
-        stars = "assets/4_star.png"
+        stars = "4_star.png"
     elif deck['Sas Percentile'] >= 75:
-        stars = "assets/3.5_star.png"
+        stars = "3.5_star.png"
     elif deck['Sas Percentile'] < 75 and deck['Sas Percentile'] > 25:
-        stars = "assets/3_star.png"
+        stars = "3_star.png"
     elif deck['Sas Percentile'] <= 25:
-        stars = "assets/2.5_star.png"
+        stars = "2.5_star.png"
     elif deck['Sas Percentile'] <= 10:
-        stars = "assets/2_star.png"
+        stars = "2_star.png"
     elif deck['Sas Percentile'] <= 1:
-        stars = "assets/1.5_star.png"
+        stars = "1.5_star.png"
     elif deck['Sas Percentile'] <= 0.1:
-        stars = "assets/1_star.png"
+        stars = "1_star.png"
     elif deck['Sas Percentile'] <= 0.01:
-        stars = "assets/0.5_star.png"
+        stars = "0.5_star.png"
     else:
-        start = "assets/0.5_star.png"
+        start = "0.5_star.png"
 
-    canvas.drawImage(stars, (left + format['stars'][0])/s, (top + format['stars'][1])/s, mask='auto')
+    canvas.drawImage(os.path.join("assets", stars), (left + format['stars'][0])/s, (top + format['stars'][1])/s, mask='auto')
 
     # Set Icon
-    icon = 'assets/set_' + deck['Expansion'] + '.png'
-    canvas.drawImage(icon, (left + format['set_icon'][0])/s, (top + format['set_icon'][1])/s, mask='auto')
+    icon = 'set_' + deck['Expansion'] + '.png'
+    canvas.drawImage(os.path.join("assets", icon), (left + format['set_icon'][0])/s, (top + format['set_icon'][1])/s, mask='auto')
 
     # QR Code
     qr = qrcode.QRCode(
@@ -139,8 +140,9 @@ def render_images(deck, canvas, left, top, s):
     qr.add_data(deck['DoK Link'])
     qr.make(fit=True)
     qrc_img = qr.make_image(fill_color='black', back_color='white')
-    qrc_img.save('data/dok/qrc/' + deck['Master Vault Link'].rsplit('/', 1)[-1] + '.png')
-    canvas.drawImage('data/dok/qrc/' + deck['Master Vault Link'].rsplit('/', 1)[-1] + '.png', (left + format['qrc'][0])/s, (top + format['qrc'][1])/s)
+    file_path = os.path.join("data", "dok", "qrc", deck['Master Vault Link'].rsplit('/', 1)[-1] + ".png")
+    qrc_img.save(file_path)
+    canvas.drawImage(file_path, (left + format['qrc'][0])/s, (top + format['qrc'][1])/s)
 
 def render_win_loss(deck, canvas, left, top, s):
     wins = int(deck['Wins'])
@@ -150,7 +152,7 @@ def render_win_loss(deck, canvas, left, top, s):
     t = (top + format['win_start'][1])/s
 
     for x in range(1, wins+2):
-        canvas.drawImage('assets/win.png', l, t, mask='auto')
+        canvas.drawImage(os.path.join('assets', 'win.png'), l, t, mask='auto')
         if x % 2 == 1:
             l += (format['win_diff'][0]/s)
         else:
@@ -164,7 +166,7 @@ def render_win_loss(deck, canvas, left, top, s):
     t = (top + format['loss_start'][1])/s
 
     for x in range(1, losses+2):
-        canvas.drawImage('assets/loss.png', l, t, mask='auto')
+        canvas.drawImage(os.path.join('assets','loss.png'), l, t, mask='auto')
         if x % 2 == 1:
             l += (format['loss_diff'][0]/s)
         else:
@@ -459,8 +461,8 @@ def main(argv):
         elif opt in ("-s", "--pagesize"):
             pagesize =  arg
 
-    pdfmetrics.registerFont(TTFont('Roboto', 'assets/fonts/Roboto-Regular.ttf'))
-    pdfmetrics.registerFont(TTFont('Roboto Mono', 'assets/fonts/RobotoMono-Regular.ttf'))
+    pdfmetrics.registerFont(TTFont('Roboto', os.path.join('assets','fonts','Roboto-Regular.ttf')))
+    pdfmetrics.registerFont(TTFont('Roboto Mono', os.path.join('assets', 'fonts', 'RobotoMono-Regular.ttf')))
 
     pdf = output
     if pagesize == 'letter':
